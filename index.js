@@ -1,10 +1,10 @@
 const inquirer = require('inquirer');
-const Manager = require('./lib/Manager.js');
+const Manager = require('./lib/Manager');
+const Engineer = require('./lib/Engineer');
 
 var employees = [];
 
 // Get the manager's information that is obtained from the command line
-// Returns a manager object
 const getManagerInfo = new Promise((resolve, reject) => {
   inquirer
   .prompt([
@@ -35,6 +35,40 @@ const getManagerInfo = new Promise((resolve, reject) => {
   })
 });
 
+// Get an engineer's information
+const getEngineerInfo = function() { return new Promise((resolve, reject) => {
+  inquirer
+  .prompt([
+    {
+      type: 'input',
+      message: "What is your engineer's name?",
+      name: 'name',
+    },
+    {
+      type: 'input',
+      message: "What is your engineer's id?",
+      name: 'id',
+    },
+    {
+      type: 'input',
+      message: "What is the engineer's email?",
+      name: 'email',
+    },
+    {
+      type: 'input',
+      message: "What is your engineer's Github username?",
+      name: 'github',
+    }
+  ])
+  .then((response) => {
+    employees.push(new Engineer(response.name, response.id, response.email, response.github));
+    return getRestOfUsers();
+  })
+  .then((response) => {
+    resolve(response);
+  }) 
+})};
+
 // Get the rest of the users
 const getRestOfUsers = function() { return new Promise((resolve, reject) => { 
   inquirer
@@ -47,13 +81,16 @@ const getRestOfUsers = function() { return new Promise((resolve, reject) => {
     }
   ])
   .then((response) => {
-    console.log(response)
     if (response.action === "Finish") {
       resolve(employees);
+    } else if (response.action === "Add an engineer") {
+      return getEngineerInfo();
     } else {
       return getRestOfUsers();
     }
-  })
+  }).then((response) => {
+    resolve(response);
+  }) 
 })};
 
 // Get the manager's info
