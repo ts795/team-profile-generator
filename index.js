@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const Manager = require('./lib/Manager');
 const Engineer = require('./lib/Engineer');
+const Intern = require('./lib/Intern');
 
 var employees = [];
 
@@ -69,6 +70,40 @@ const getEngineerInfo = function() { return new Promise((resolve, reject) => {
   }) 
 })};
 
+// Get an intern's information
+const getInternInfo = function() { return new Promise((resolve, reject) => {
+  inquirer
+  .prompt([
+    {
+      type: 'input',
+      message: "What is your intern's name?",
+      name: 'name',
+    },
+    {
+      type: 'input',
+      message: "What is your intern's id?",
+      name: 'id',
+    },
+    {
+      type: 'input',
+      message: "What is the intern's email?",
+      name: 'email',
+    },
+    {
+      type: 'input',
+      message: "What is your intern's school?",
+      name: 'school',
+    }
+  ])
+  .then((response) => {
+    employees.push(new Intern(response.name, response.id, response.email, response.school));
+    return getRestOfUsers();
+  })
+  .then((response) => {
+    resolve(response);
+  }) 
+})};
+
 // Get the rest of the users
 const getRestOfUsers = function() { return new Promise((resolve, reject) => { 
   inquirer
@@ -85,6 +120,8 @@ const getRestOfUsers = function() { return new Promise((resolve, reject) => {
       resolve(employees);
     } else if (response.action === "Add an engineer") {
       return getEngineerInfo();
+    } else if (response.action === "Add an intern") {
+      return getInternInfo();
     } else {
       return getRestOfUsers();
     }
