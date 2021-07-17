@@ -142,19 +142,23 @@ function createEmployeeHTMLDivs() {
     var emailHTML = `<a href = "mailto:${email}">${email}</a>`;
     // Third item displayed depends on the role
     var thirdItem = '';
+    var iconForRole = '';
     if (role === "Manager") {
       // Managers have an office number
       var officeNumber = employees[idx].officeNumber;
       thirdItem = `Office number: ${officeNumber}`;
+      iconForRole = '<span class="fas fa-mug-hot"></span>';
     } else if (role === "Engineer") {
       // Engineers have a github link
       var github = employees[idx].getGithub();
       var githubLink = `<a href = "https://github.com/${github}">${github}</a>`;
       thirdItem = `GitHub: ${githubLink}`;
+      iconForRole = '<span class="fas fa-glasses"></span>';
     } else {
       // Interns have a school
       var school = employees[idx].getSchool();
       thirdItem = `School: ${school}`;
+      iconForRole = '<span class="fas fa-user-graduate"></span>';
     }
 
     var employeeDivTemplate = `
@@ -162,7 +166,7 @@ function createEmployeeHTMLDivs() {
         <div class="card shadow-sm">
           <div class="card-header bg-primary border-success text-white">
             <h2> ${name}</h2>
-            <h3> ${role}</h3>
+            <h3> ${iconForRole} ${role}</h3>
           </div>
           <div class="card-body bg-light">
             <ul class="list-group list-group-flush">
@@ -190,6 +194,7 @@ function createTeamInformationHTML() {
         <meta charset="UTF-8">
         <title>My Team</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
       </head>
     
       <body>
