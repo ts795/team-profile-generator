@@ -1,3 +1,4 @@
+const fs = require('fs');
 const inquirer = require('inquirer');
 const Manager = require('./lib/Manager');
 const Engineer = require('./lib/Engineer');
@@ -130,11 +131,97 @@ const getRestOfUsers = function() { return new Promise((resolve, reject) => {
   }) 
 })};
 
+// Create HTML for employees
+function createEmployeeHTMLDivs() {
+  var allDivs = '';
+  for (var idx = 0; idx < employees.length; idx++) {
+    var name = employees[idx].getName();
+    var role = employees[idx].getRole();
+    var id = employees[idx].getId();
+    var email = employees[idx].getEmail();
+    var emailHTML = `<a href = "mailto:${email}">${email}</a>`;
+    // Third item displayed depends on the role
+    var thirdItem = '';
+    if (role === "Manager") {
+      // Managers have an office number
+      var officeNumber = employees[idx].officeNumber;
+      thirdItem = `Office number: ${officeNumber}`;
+    } else if (role === "Engineer") {
+      // Engineers have a github link
+      var github = employees[idx].getGithub();
+      var githubLink = `<a href = "https://github.com/${github}">${github}</a>`;
+      thirdItem = `GitHub: ${githubLink}`;
+    } else {
+      // Interns have a school
+      var school = employees[idx].getSchool();
+      thirdItem = `School: ${school}`;
+    }
+
+    var employeeDivTemplate = `
+      <div class="col">
+        <div class="card shadow-sm">
+          <div class="card-header bg-primary border-success text-white">
+            <h2> ${name}</h2>
+            <h3> ${role}</h3>
+          </div>
+          <div class="card-body bg-light">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">ID: ${id}</li>
+              <li class="list-group-item">Email: ${emailHTML}</li>
+              <li class="list-group-item">${thirdItem}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    `
+    allDivs += employeeDivTemplate;
+  }
+  return allDivs;
+}
+
+// Create the HTML for the team information
+function createTeamInformationHTML() {
+  var employeeDivs = createEmployeeHTMLDivs();
+  var html = `
+  <!DOCTYPE html>
+    <html lang="en-US">
+    
+      <head>
+        <meta charset="UTF-8">
+        <title>My Team</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+      </head>
+    
+      <body>
+        <main>
+          <header>
+            <div class="p-5 mb-4 bg-danger rounded-3">
+              <div class="container-fluid py-5 text-center text-white">
+                <h1 class="display-5 fw-bold">My Team</h1>
+              </div>
+            </div>
+          </header>
+          <div class="album py-5">
+            <div class="container">
+              <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                ${employeeDivs}
+              </div>
+            </div>
+          </div>
+        </main>
+      </body>
+    
+    </html>
+  `;
+  fs.writeFile("dist/index.html", html, (err) =>
+  err ? console.error(err) : console.log('HTML file is at dist/index.html!'));
+}
+
 // Get the manager's info
 getManagerInfo
   .then((response) => {
     return getRestOfUsers();
   })
   .then((response) => {
-    console.log(response);    
+    createTeamInformationHTML();    
   });
